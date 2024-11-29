@@ -16,8 +16,21 @@ def cli_argument_list(config_dict: Optional[dict]):
                 string += f" --{key.replace('_', '-')} {value}"
             else:
                 string += f" --{key.replace('_', '-')}"
-    return sys.argv[1:] + string.split()
+    if not in_notebook():
+        return sys.argv[1:] + string.split()
+    else:
+        return string.split()
 
+def in_notebook():
+    try:
+        from IPython import get_ipython
+        if 'IPKernelApp' not in get_ipython().config:  # pragma: no cover
+            return False
+    except ImportError:
+        return False
+    except AttributeError:
+        return False
+    return True
 
 def check_argument(name: str, config_dict: Optional[dict] = None):
     parser = options.general_parser()
